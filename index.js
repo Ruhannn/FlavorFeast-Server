@@ -21,21 +21,42 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const foodCollection = client.db("FlavorFeast").collection("foods");
+    const cartsCollection = client.db("FlavorFeast").collection("carts");
 
     app.post("/submit-form", async (req, res) => {
       const formData = req.body;
       const result = await foodCollection.insertOne(formData);
       res.send(result);
     });
+    app.get("/cart", async (req, res) => {
+      const result = await cartsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/cart", async (req, res) => {
+      const cart = req.body;
+      console.log(cart);
+      const result = await cartsCollection.insertOne(cart);
+      res.send(result);
+    });
+
     app.get("/submit-form", async (req, res) => {
       const cursor = foodCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
+
     app.get("/product-details/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await foodCollection.findOne(query);
+      res.send(result);
+    });
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("delete data form data base", id);
+      const query = { _id: new ObjectId(id) };
+      const result = await cartsCollection.deleteOne(query);
       res.send(result);
     });
     app.put("/product-details/:id", async (req, res) => {
@@ -58,6 +79,7 @@ async function run() {
       const result = await foodCollection.updateOne(filter, update2, options);
       res.send(result);
     });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
