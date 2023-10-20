@@ -28,10 +28,6 @@ async function run() {
       const result = await foodCollection.insertOne(formData);
       res.send(result);
     });
-    app.get("/cart", async (req, res) => {
-      const result = await cartsCollection.find().toArray();
-      res.send(result);
-    });
 
     app.post("/cart", async (req, res) => {
       const cart = req.body;
@@ -40,9 +36,10 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/submit-form", async (req, res) => {
-      const cursor = foodCollection.find();
-      const result = await cursor.toArray();
+    app.get("/cart", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const result = await cartsCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -52,6 +49,13 @@ async function run() {
       const result = await foodCollection.findOne(query);
       res.send(result);
     });
+
+    app.get("/submit-form", async (req, res) => {
+      const cursor = foodCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.delete("/cart/:id", async (req, res) => {
       const id = req.params.id;
       console.log("delete data form data base", id);
